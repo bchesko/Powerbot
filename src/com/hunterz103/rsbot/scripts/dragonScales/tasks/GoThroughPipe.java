@@ -19,13 +19,13 @@ public class GoThroughPipe extends Task {
     }
 
     @Override
-    public int priority() {
+    public int getPriority() {
         return 2;
     }
 
     @Override
     public boolean activate() {
-        return Place.INNER_DUNGEON.area.contains(ctx.players.local()) && ctx.backpack.select().count() != 28 && ctx.players.local().getAnimation() == -1;
+        return Place.INNER_DUNGEON.area.contains(ctx.players.local()) && ctx.backpack.select().count() != 28 && ctx.players.local().getAnimation() == -1 && BlueDragonScalePicker.usingAgilityShortcut;
     }
 
     @Override

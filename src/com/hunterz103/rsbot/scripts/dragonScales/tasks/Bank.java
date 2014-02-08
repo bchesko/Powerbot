@@ -15,12 +15,16 @@ import java.util.concurrent.Callable;
  */
 public class Bank extends Task {
 
+    private final int SCALE_ID = 243;
+    private final int KEY_ID = 1590;
+    private final int TAB_ID = 8009;
+    
     public Bank(MethodContext ctx) {
         super(ctx);
     }
 
     @Override
-    public int priority() {
+    public int getPriority() {
         return 1;
     }
 
@@ -46,11 +50,11 @@ public class Bank extends Task {
             }, 300, 5);
         } else {
             if (BlueDragonScalePicker.scalesOrig == -1) {
-                BlueDragonScalePicker.scalesOrig = ctx.bank.select().id(243).poll().getStackSize();
+                BlueDragonScalePicker.scalesOrig = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
                 BlueDragonScalePicker.getInstance().log("Original amount of scales in bank: " + BlueDragonScalePicker.scalesOrig + ". (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(BlueDragonScalePicker.scalesOrig)) + " gp)");
             }
              for (Item item : ctx.backpack.getAllItems()) {
-                if (item.getId() != -1 && !item.getName().equalsIgnoreCase("falador teleport") && ctx.backpack.select().contains(item)) {
+                if (item.getId() != -1 && shouldBeBanked(item) && ctx.backpack.select().contains(item)) {
                     ctx.bank.deposit(item.getId(), org.powerbot.script.methods.Bank.Amount.ALL);
                     sleep(700, 900);
                 }
@@ -59,15 +63,22 @@ public class Bank extends Task {
             Condition.wait(new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
-                    return ctx.backpack.select().count() == 1;
+                    return ctx.backpack.select().id(SCALE_ID).count() == 0;
                 }
             }, 200, 5);
 
-            if (ctx.backpack.select().id(243).count() == 0) {
-                BlueDragonScalePicker.scales = ctx.bank.select().id(243).poll().getStackSize();
+            if (ctx.backpack.select().id(SCALE_ID).count() == 0) {
+                BlueDragonScalePicker.scales = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
                 BlueDragonScalePicker.getInstance().log(BlueDragonScalePicker.scales + " scale(s) are in the bank now. (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(BlueDragonScalePicker.scales)) + " gp)");
                 ctx.bank.close();
             }
         }
+    }
+
+    private boolean shouldBeBanked(Item item){
+        for (int id : new int[]{KEY_ID, TAB_ID}) { //because I'll add familiars later
+            if (item.getId() == id) return false;
+        }
+        return true;
     }
 }

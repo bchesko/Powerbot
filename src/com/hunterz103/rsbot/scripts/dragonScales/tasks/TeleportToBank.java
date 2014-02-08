@@ -20,7 +20,7 @@ public class TeleportToBank extends Task {
     }
 
     @Override
-    public int priority() {
+    public int getPriority() {
         return 1;
     }
 

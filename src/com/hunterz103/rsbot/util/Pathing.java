@@ -2,19 +2,21 @@ package com.hunterz103.rsbot.util;
 
 import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.methods.MethodProvider;
+import org.powerbot.script.util.Condition;
 import org.powerbot.script.wrappers.Tile;
 import org.powerbot.script.wrappers.TilePath;
 import org.powerbot.script.util.Random;
+
+import java.util.concurrent.Callable;
 
 
 /**
  * Created by Brian on 2/1/14.
  */
-public class Pathing {
-    private final MethodContext ctx;
+public class Pathing extends MethodProvider {
 
     public Pathing(MethodContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
     }
 
     public boolean walkPath(TilePath tp, int randomizeX, int randomizeY, int maxDistFrom) {
@@ -32,9 +34,15 @@ public class Pathing {
         }
 
         for (int i = startingIndex; i < tpa.length; i++){
-            Tile t = tpa[i];
+            final Tile t = tpa[i];
             ctx.movement.stepTowards(t);
-            while (ctx.players.local().isInMotion() && t.distanceTo(ctx.players.local()) > 4) new MethodProvider(ctx).sleep(300);
+            Condition.wait(new Callable<Boolean>(){
+                @Override
+                public Boolean call() throws Exception {
+                    while (ctx.players.local().isInMotion() && t.distanceTo(ctx.players.local()) > 4) sleep(100);
+                    return t.distanceTo(ctx.players.local()) < 4;
+                }
+            }, 200, 10);
         }
 
         return tp.getEnd().distanceTo(ctx.players.local()) < maxDistFrom;

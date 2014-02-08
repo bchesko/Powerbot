@@ -26,7 +26,7 @@ public class WalkToDungeon extends Task {
     }
 
     @Override
-    public int priority() {
+    public int getPriority() {
         return 3;
     }
 

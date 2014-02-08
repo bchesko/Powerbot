@@ -23,7 +23,7 @@ public class PickupScales extends Task {
     }
 
     @Override
-    public int priority() {
+    public int getPriority() {
         return 1;
     }
 

@@ -9,19 +9,12 @@ import java.awt.image.BufferedImage;
  * Created by Brian on 2/1/14.
  */
 public class Util {
+
     private final MethodContext ctx;
+
     public Util(MethodContext ctx){
         this.ctx = ctx;
     }
-
-    /*
-    public boolean waitFor(Condition condition, long millis){
-        Timer timer = new Timer(millis);
-        while (timer.getRemaining() > 0 && !condition.activate()) {
-            new MethodProvider(ctx).sleep(50);
-        }
-        return condition.activate();
-    }            */
 
     public void drawMouse(Graphics graphics, BufferedImage mX, BufferedImage mY, BufferedImage cX, BufferedImage cY){
         Graphics2D g = (Graphics2D) graphics;
@@ -40,6 +33,7 @@ public class Util {
     }
 
     public void drawStrings(Graphics g, String... strs){
+        //This is what we call the "old fashioned temporary lazy paint"
         g.setColor(Color.BLACK);
         for (int i = 0; i < strs.length; i++){
             g.drawString(strs[i], 19, 299 - (strs.length * 16) + (16 * i));

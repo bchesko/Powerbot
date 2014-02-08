@@ -20,7 +20,7 @@ public class WalkToBank extends Task {
     }
 
     @Override
-    public int priority() {
+    public int getPriority() {
         return 3;
     }
 

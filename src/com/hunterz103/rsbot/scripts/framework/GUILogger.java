@@ -5,11 +5,8 @@
 package com.hunterz103.rsbot.scripts.framework;
 
 import java.awt.*;
-import java.awt.font.TextLayout;
 import javax.swing.*;
 import javax.swing.GroupLayout;
-import javax.swing.text.Caret;
-import javax.swing.text.DefaultCaret;
 
 /**
  * @author Hunter 103

@@ -33,12 +33,7 @@ public abstract class TaskScript extends PollingScript {
     private final void sortTasksByPriority() {
         if (tasks.size() == 0) return;
 
-        Collections.sort(tasks, new Comparator<Task>() {
-            @Override
-            public int compare(Task one, Task other) {
-                return Integer.compare(one.priority(), other.priority());
-            }
-        });
+        Collections.sort(tasks);
     }
 
     public void log(String str) {
