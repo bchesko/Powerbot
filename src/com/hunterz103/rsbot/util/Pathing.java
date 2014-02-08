@@ -48,6 +48,13 @@ public class Pathing extends MethodProvider {
         return tp.getEnd().distanceTo(ctx.players.local()) < maxDistFrom;
     }
 
+    /**
+     * Randomizes each tile of the path tilePath
+     * @param tilePath The path to randomize
+     * @param randomizeX Max distance to deviate from on the x axis
+     * @param randomizeY Max distance to deviate from on the y axis
+     * @return the randomized path
+     */
     private TilePath randomize(TilePath tilePath, int randomizeX, int randomizeY) {
         Tile[] result = new Tile[tilePath.toArray().length];
 

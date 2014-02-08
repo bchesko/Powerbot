@@ -32,7 +32,7 @@ public class Util {
         }
     }
 
-    public void drawStrings(Graphics g, String... strs){
+    public static void drawStrings(Graphics g, String... strs){
         //This is what we call the "old fashioned temporary lazy paint"
         g.setColor(Color.BLACK);
         for (int i = 0; i < strs.length; i++){
