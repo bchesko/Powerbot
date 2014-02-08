@@ -1,12 +1,14 @@
 package com.hunterz103.rsbot.scripts.dragonScales.tasks;
 
 import com.hunterz103.rsbot.scripts.framework.Task;
+import org.powerbot.script.lang.Filter;
 import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.util.Condition;
 import org.powerbot.script.util.Random;
 import org.powerbot.script.wrappers.Item;
 import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
+import org.powerbot.script.wrappers.Npc;
 
 import java.util.concurrent.Callable;
 
@@ -33,6 +35,8 @@ public class TeleportToBank extends Task {
     public void execute() {
         final Item tab = ctx.backpack.select().id(8009).poll();
 
+        if (beingAttacked()) BlueDragonScalePicker.getInstance().log("Being attacked - teleporting away");
+
         if (tab != null) {
             if (tab.interact("Break")) {
                 sleep(1000, 1200);
@@ -44,6 +48,22 @@ public class TeleportToBank extends Task {
                     }
                 }, Random.nextInt(200, 300), 10);
             }
+        } else {
+            BlueDragonScalePicker.getInstance().log("Uh oh... we're out of tabs!!!");
         }
     }
+
+    private Filter interactFilter = new Filter<Npc>(){
+        @Override
+        public boolean accept(Npc npc) {
+            return npc.getInteracting().equals(ctx.players.local());
+        }
+    };
+
+    private boolean beingAttacked() {
+        return ctx.npcs.select(interactFilter).size() >= 1
+            && ctx.players.local().isInCombat()
+            && ((BlueDragonScalePicker.usingAgilityShortcut) ? true : (Place.DRAGONS.area.containsPlayer(ctx) || ctx.combatBar.getMaximumHealth() / 2 > ctx.combatBar.getHealth()));
+    }
+
 }

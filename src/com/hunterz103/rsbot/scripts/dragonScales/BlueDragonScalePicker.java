@@ -35,15 +35,8 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
     public static int scales = -1;
     public static int tabsOrig = -1;
     public static int tabs = -1;
-    public static boolean needToTeleport = false;
     public static boolean usingAgilityShortcut = false;
     private boolean mayBegin = false;
-    Thread t = new Thread(new Runnable(){
-        @Override
-        public void run() {
-            checkPlayerIsAttacked();
-        }
-    });;
 
     @Override
     public void start() {
@@ -73,8 +66,6 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
 
         tabsOrig = ctx.backpack.select().id(8009).poll().getStackSize();
 
-        t.start();
-
         while (!mayBegin) {
             try {
                 Thread.currentThread().sleep(50);
@@ -82,29 +73,6 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
                 e.printStackTrace();
             }
         };
-    }
-
-    private void checkPlayerIsAttacked(){
-        while (!t.isInterrupted()) {
-            for (Npc npc : ctx.npcs.select()) {
-                if (npc.getInteracting().equals(ctx.players.local())
-                        && ctx.players.local().isInCombat()
-                        && ((usingAgilityShortcut) ? true : (Place.DRAGONS.area.containsPlayer(ctx) || ctx.combatBar.getMaximumHealth() / 2 > ctx.combatBar.getHealth()))) {
-                    log("We're being attacked! Time to go!");
-                    needToTeleport = true;
-                }
-            }
-
-            if (needToTeleport && Place.FALADOR.area.contains(ctx.players.local())) {
-                needToTeleport = false;
-            }
-
-            try {
-                t.sleep(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 
     @Override
@@ -122,8 +90,6 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        t.interrupt();
     }
 
     @Override
