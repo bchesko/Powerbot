@@ -12,25 +12,24 @@ public abstract class TaskScript extends PollingScript {
 
     protected static TaskScript instance;
     public List<Task> tasks = new ArrayList<>();
-    private Task currentTask = null;
+    //private Task currentTask = null;
     private GUILogger guiLogger;
+    private boolean guiVisible = false;
 
     public TaskScript(){
-        this.instance = this;
+        TaskScript.instance = this;
 
-        SwingUtilities.invokeLater(new Runnable(){
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 guiLogger = new GUILogger();
                 guiLogger.setVisible(true);
+                guiVisible = true;
             }
         });
 
         sortTasksByPriority();
-
-        while (guiLogger == null) {System.out.println("a");};
     }
-
     private final void sortTasksByPriority() {
         if (tasks.size() == 0) return;
 
@@ -42,11 +41,11 @@ public abstract class TaskScript extends PollingScript {
         });
     }
 
-    protected void log(String str) {
+    public void log(String str) {
         guiLogger.addToScriptLog(runtimeToString() + " - " + str);
     }
 
-    protected void logDev(String str) {
+    public void logDev(String str) {
         guiLogger.addToDevLog(runtimeToString() + " - " + str);
     }
 
@@ -60,16 +59,19 @@ public abstract class TaskScript extends PollingScript {
 
     @Override
     public int poll() {
-        System.out.println("test");
+        if (!guiVisible) return 30;
         int returnTime = 50;
+        /*
         if (currentTask != null){
             if (!currentTask.isInProgress()) currentTask = null;
         }
+        */
 
         if (tasks != null) {
             for (Task task : tasks){
                 iteration:
                 if (task.activate()) {
+                    /*
                     if (currentTask != null && task.priority() < currentTask.priority()) {
                         //If we have a task and the task being checked is more important (remember, higher integer priority means lower actual priority)
                         logDev("Overriding task " + currentTask.toString() + " with " + task.toString());
@@ -78,8 +80,10 @@ public abstract class TaskScript extends PollingScript {
                     } else {
                         break iteration;
                     }
-                    currentTask = task;
-                    task.executeAndSet();
+                    */
+                    logDev("Starting task: " + task.getClass().getCanonicalName());
+                    //currentTask = task;
+                    task.execute();
                     returnTime = 200;
                 }
             }
@@ -87,5 +91,10 @@ public abstract class TaskScript extends PollingScript {
 
         return returnTime;
     }
+
+    public static TaskScript getInstance() {
+        return instance;
+    }
+
 
 }

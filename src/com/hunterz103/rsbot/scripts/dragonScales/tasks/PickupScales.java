@@ -41,14 +41,17 @@ public class PickupScales extends Task {
         final GroundItem scale = ctx.groundItems.select().id(243).nearest().poll();
 
         if (scale != null) {
+            BlueDragonScalePicker.getInstance().log("Gonna pick up a scale");
             if (scale.getLocation().distanceTo(ctx.players.local()) >= 5) {
-                Condition.wait(new Callable() {
-                    @Override
-                    public Object call() throws Exception {
-                        if (ctx.movement.stepTowards(scale) && !ctx.players.local().isInMotion()) sleep(200, 300);
-                        return scale.getLocation().distanceTo(ctx.players.local()) < 5;
-                    }
-                });
+                if (ctx.movement.stepTowards(scale)) {
+                    Condition.wait(new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() throws Exception {
+                            while (ctx.players.local().isInMotion());
+                            return scale.getLocation().distanceTo(ctx.players.local()) < 5;
+                        }
+                    }, 200, 10);
+                }
             }
             if (!scale.isInViewport()) {
                 ctx.camera.turnTo(scale);
@@ -56,16 +59,15 @@ public class PickupScales extends Task {
                     ctx.camera.setPitch(Random.nextInt(30, 60));
                 }
             } else {
-                Condition.wait(new Callable() {
-                    @Override
-                    public Object call() throws Exception {
-                        if (takeScale(scale)) {
-                            sleep(600, 700);
+                if (takeScale(scale)) {
+                    Condition.wait(new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() throws Exception {
                             while (ctx.players.local().isInMotion());
+                            return !scale.isValid() || !ctx.groundItems.select().id(243).nearest().poll().equals(scale);
                         }
-                        return !scale.isValid() || !ctx.groundItems.select().id(243).nearest().poll().equals(scale);
-                    }
-                });
+                    }, Random.nextInt(200, 300), 10);
+                }
             }
         }
 
@@ -73,14 +75,13 @@ public class PickupScales extends Task {
     }
 
     private boolean takeScale(final GroundItem scale){
-        Condition.wait(new Callable() {
+        scale.click(false);
+        Condition.wait(new Callable<Boolean>() {
             @Override
-            public Object call() throws Exception {
-                scale.click(false);
-                sleep(200);
+            public Boolean call() throws Exception {
                 return ctx.menu.isOpen();
             }
-        }, Random.nextInt(200, 300), 5);
+        }, Random.nextInt(20, 30), 10);
 
         if (ctx.menu.isOpen()) {
             if (ctx.menu.indexOf(takeFilter) == -1) {
@@ -91,7 +92,12 @@ public class PickupScales extends Task {
 
                 if (takeIndex != -1) {
                     ctx.menu.click(takeFilter);
-                    sleep(300, 500);
+                    Condition.wait(new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() throws Exception {
+                            return !ctx.menu.isOpen();
+                        }
+                    }, 50, 10);
                     return true;
                 }
             }

@@ -8,8 +8,6 @@ import org.powerbot.script.methods.MethodProvider;
  */
 public abstract class Task extends MethodProvider {
 
-    private boolean inProgress = false;
-
     public Task(final MethodContext ctx) {
         super(ctx);
     }
@@ -18,16 +16,9 @@ public abstract class Task extends MethodProvider {
      * @return importance ascending (1 is higher priority than 3)
      */
     public abstract int priority();
-    public abstract boolean activate();
-    public final void executeAndSet(){
-        inProgress = true;
-        execute();
-        inProgress = false;
-    }
-    public abstract void execute();
 
-    public boolean isInProgress(){
-        return inProgress;
-    }
+    public abstract boolean activate();
+
+    public abstract void execute();
 
 }

@@ -1,5 +1,6 @@
 package com.hunterz103.rsbot.scripts.dragonScales.tasks;
 
+import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.framework.Task;
 import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.wrappers.Tile;
@@ -31,6 +32,7 @@ public class WalkToBank extends Task {
 
     @Override
     public void execute() {
+        BlueDragonScalePicker.getInstance().log("Walking to bank");
         pathing.walkPath(pathToBank, 1, 3, 2);
     }
 }

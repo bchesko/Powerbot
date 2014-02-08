@@ -1,11 +1,11 @@
 package com.hunterz103.rsbot.scripts.dragonScales.tasks;
 
+import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.framework.Task;
 import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.util.Condition;
 import org.powerbot.script.wrappers.GameObject;
 import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
-import org.powerbot.script.util.Random;
 
 import java.util.concurrent.Callable;
 
@@ -36,16 +36,18 @@ public class GoThroughPipe extends Task {
             ctx.camera.turnTo(pipe);
             sleep(300,500);
         } else {
-            Condition.wait(new Callable() {
-                @Override
-                public Object call() throws Exception {
-                    pipe.interact("Squeeze-through");
-                    sleep(300, 400);
-                    while (ctx.players.local().getAnimation() != -1) ;
-                    sleep(300, 400);
-                    return ctx.players.local().getLocation().getX() <= 2935;
-                }
-            }, Random.nextInt(500, 700), 5);
+
+            if (pipe.interact("Squeeze-through")) {
+                BlueDragonScalePicker.getInstance().log("Squeezing through pipe to dragons");
+                sleep(300, 400);
+                Condition.wait(new Callable() {
+                    @Override
+                    public Object call() throws Exception {
+                        while (ctx.players.local().getAnimation() != -1);
+                        return ctx.players.local().getLocation().getX() <= 2935;
+                    }
+                }, 200, 10);
+            }
         }
     }
 }

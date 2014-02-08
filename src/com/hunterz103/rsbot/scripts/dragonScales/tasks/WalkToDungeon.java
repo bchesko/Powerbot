@@ -1,9 +1,9 @@
 package com.hunterz103.rsbot.scripts.dragonScales.tasks;
 
+import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.framework.Task;
 import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.util.Condition;
-import org.powerbot.script.util.Random;
 import org.powerbot.script.wrappers.GameObject;
 import org.powerbot.script.wrappers.Tile;
 import org.powerbot.script.wrappers.TilePath;
@@ -49,18 +49,16 @@ public class WalkToDungeon extends Task {
                         sleep(300, 500);
                     }
 
-                    Condition.wait(new Callable() {
-                        @Override
-                        public Object call() throws Exception {
-                            wall.interact("Climb-over");
-                            sleep(300, 400);
-                            while (ctx.players.local().getAnimation() != -1) ;
-                            sleep(300, 400);
-                            while (ctx.players.local().getAnimation() != -1) ;
-                            sleep(300, 400);
-                            return ctx.players.local().getLocation().getX() <= 2935;
-                        }
-                    }, Random.nextInt(500, 700), 5);
+                    if (wall.interact("Climb-over")) {
+                        BlueDragonScalePicker.getInstance().log("Climbing over wall.");
+                        Condition.wait(new Callable<Boolean>() {
+                            @Override
+                            public Boolean call() throws Exception {
+                                while (ctx.players.local().getAnimation() != -1) ;
+                                return ctx.players.local().getLocation().getX() <= 2935;
+                            }
+                        }, 500, 5);
+                    }
                 }
             }
         } else { //Post wall jump
@@ -72,16 +70,17 @@ public class WalkToDungeon extends Task {
                     sleep(300, 500);
                 }
 
-                Condition.wait(new Callable() {
-                    @Override
-                    public Object call() throws Exception {
-                        dungeon.interact("Climb-down");
-                        sleep(300, 400);
-                        while (ctx.players.local().getAnimation() != -1 && ctx.players.local().isInMotion());
-                        sleep(300, 400);
-                        return Place.INNER_DUNGEON.area.contains(ctx.players.local());
-                    }
-                }, Random.nextInt(500, 700), 5);
+                if (dungeon.interact("Climb-down")) {
+                    BlueDragonScalePicker.getInstance().log("Going into dungeon.");
+                    sleep(300, 400);
+                    Condition.wait(new Callable() {
+                        @Override
+                        public Object call() throws Exception {
+                            while (ctx.players.local().getAnimation() != -1 && ctx.players.local().isInMotion());
+                            return Place.INNER_DUNGEON.area.contains(ctx.players.local());
+                        }
+                    }, 200, 10);
+                }
             } else { //AWAY FROM STEPS
                 pathing.walkPath(pathToDung, 3, 3, 3);
             }

@@ -34,15 +34,16 @@ public class TeleportToBank extends Task {
         final Item tab = ctx.backpack.select().id(8009).poll();
 
         if (tab != null) {
-            Condition.wait(new Callable() {
-                @Override
-                public Object call() throws Exception {
-                    if (tab.interact("Break")) sleep(1000, 1200);
-                    while (ctx.players.local().getAnimation() != -1);
-                    sleep(300, 400);
-                    return Place.FALADOR.area.contains(ctx.players.local());
-                }
-            }, Random.nextInt(500, 700), 10);
+            if (tab.interact("Break")) {
+                sleep(1000, 1200);
+                while (ctx.players.local().getAnimation() != -1);
+                Condition.wait(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return Place.FALADOR.area.contains(ctx.players.local());
+                    }
+                }, Random.nextInt(200, 300), 10);
+            }
         }
     }
 }

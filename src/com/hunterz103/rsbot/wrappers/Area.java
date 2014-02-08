@@ -1,5 +1,6 @@
 package com.hunterz103.rsbot.wrappers;
 
+import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.wrappers.Locatable;
 import org.powerbot.script.wrappers.Tile;
 
@@ -12,6 +13,10 @@ import java.util.List;
 public class Area {
     public final List<Tile> tiles = new ArrayList<>();
 
+    /**
+     * @param c1 Any corner of the area
+     * @param c2 The corner opposite of c1
+     */
     public Area(Tile c1, Tile c2){
         for (int x = c1.getX(); (c1.getX() <= c2.getX()) ? x <= c2.getX() : x >= c2.getX(); x += ((c1.getX() <= c2.getX()) ? 1 : -1)) {
             for (int y = c1.getY(); (c1.getY() <= c2.getY()) ? y <= c2.getY() : y >= c2.getY(); y += ((c1.getY() <= c2.getY()) ? 1 : -1)) {
@@ -33,6 +38,13 @@ public class Area {
             }
         }
         return false;
+    }
+
+    /**
+     * @return whether or not the player is located in the area. INCLUSIVE - OF /ALL/ SIDES.
+     */
+    public boolean containsPlayer(MethodContext ctx) {
+        return contains(ctx.players.local());
     }
 
 

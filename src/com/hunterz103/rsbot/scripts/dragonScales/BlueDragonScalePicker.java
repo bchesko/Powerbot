@@ -25,19 +25,19 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
 
     BufferedImage mX, mY, cX, cY; //Mouse X, Mouse Y, Click X, Click Y
     Util util = new Util(ctx);
-    int scalePrice = 0;
+    public static int scalePrice = 0;
     int tabPrice = 0;
     public static int scalesOrig = -1;
     public static int scales = -1;
     public static int tabsOrig = -1;
     public static int tabs = -1;
     public static boolean needToTeleport = false;
-    final Thread t = new Thread(new Runnable(){
+    Thread t = new Thread(new Runnable(){
         @Override
         public void run() {
             checkPlayerIsAttacked();
         }
-    });
+    });;
 
     @Override
     public void start() {
@@ -49,8 +49,8 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
         tasks.add(new TeleportToBank(ctx));
         tasks.add(new GoThroughPipe(ctx));
 
-        //scalePrice = GeItem.getPrice(243);
-        //tabPrice = GeItem.getPrice(8009);
+        scalePrice = GeItem.getPrice(243);
+        tabPrice = GeItem.getPrice(8009);
 
         mX = downloadImage("http://i.imgur.com/SfFWM.png");
         cX = downloadImage("http://i.imgur.com/PX1IA.png");
@@ -78,7 +78,7 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
             try {
                 t.sleep(50);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -86,7 +86,7 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
     @Override
     public void stop(){
         final File path = new File(getStorageDirectory().getPath(), System.currentTimeMillis() + ".png");
-        System.out.println(path.toString());
+        log("Picture saved to " + path.toString());
         BufferedImage img = null;
         try {
             img = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
@@ -98,6 +98,7 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         t.interrupt();
     }
 
@@ -117,4 +118,10 @@ public class BlueDragonScalePicker extends TaskScript implements PaintListener {
 
         util.drawMouse(graphics, mX, mY, cX, cY);
     }
+
+    public static int getNetProfit(int scales){
+        return scales * scalePrice;
+    }
+
+
 }
