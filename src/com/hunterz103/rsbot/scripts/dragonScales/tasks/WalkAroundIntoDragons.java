@@ -4,7 +4,6 @@ import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
 import com.hunterz103.rsbot.scripts.framework.Task;
 import com.hunterz103.rsbot.util.Pathing;
-import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.util.Condition;
 import org.powerbot.script.wrappers.GameObject;
 import org.powerbot.script.wrappers.Tile;
@@ -15,7 +14,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by Brian on 2/8/14.
  */
-public class WalkAroundIntoDragons extends Task {
+public class WalkAroundIntoDragons extends Task<BlueDragonScalePicker> {
 
     Pathing pathing = new Pathing(ctx);
     TilePath pathToFirstDoor = ctx.movement.newTilePath(new Tile(2883, 9818, 0), new Tile(2885, 9831, 0));
@@ -29,8 +28,8 @@ public class WalkAroundIntoDragons extends Task {
     private final int KEY_ID = 1590;
 
 
-    public WalkAroundIntoDragons(MethodContext ctx) {
-        super(ctx);
+    public WalkAroundIntoDragons(BlueDragonScalePicker arg0) {
+        super(arg0);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class WalkAroundIntoDragons extends Task {
 
     @Override
     public boolean activate() {
-        return Place.INNER_DUNGEON.area.containsPlayer(ctx) && !Place.DRAGONS.area.containsPlayer(ctx) && !BlueDragonScalePicker.usingAgilityShortcut && ctx.backpack.select().count() != 28;
+        return Place.INNER_DUNGEON.area.containsPlayer(ctx) && !Place.DRAGONS.area.containsPlayer(ctx) && ctx.backpack.select().count() != 28;
     }
 
     @Override
@@ -49,7 +48,7 @@ public class WalkAroundIntoDragons extends Task {
 
         if (ctx.players.local().getLocation().getX() <= 2888) { //Pre-first-door
             if (pathToFirstDoor.getEnd().distanceTo(ctx.players.local()) > 5) {
-                BlueDragonScalePicker.getInstance().log("Walking to first door");
+                script.log("Walking to first door");
                 pathing.walkPath(pathToFirstDoor, 2, 2, 3);
             } else {
                 openDoor(firstDoorTile);
@@ -58,7 +57,7 @@ public class WalkAroundIntoDragons extends Task {
             openDoor(secondDoorTile);
         } else if (ctx.players.local().getLocation().getY() < 9826 && ctx.players.local().getLocation().getX() > 2888) { //from 2nd to last door
             if (pathToFinalDoor.getEnd().distanceTo(ctx.players.local()) > 5) {
-                BlueDragonScalePicker.getInstance().log("Walking to last door");
+                script.log("Walking to last door");
                 pathing.walkPath(pathToFinalDoor, 2, 2, 3);
             } else {
                 openDoor(lastDoorTile);
@@ -79,7 +78,7 @@ public class WalkAroundIntoDragons extends Task {
                         }
                     }, 30, 10);
                     if (ctx.mouse.click(door.getInteractPoint(), true)) {
-                        BlueDragonScalePicker.getInstance().log("Opening last door");
+                        script.log("Opening last door");
                         Condition.wait(new Callable<Boolean>() {
                             @Override
                             public Boolean call() throws Exception {

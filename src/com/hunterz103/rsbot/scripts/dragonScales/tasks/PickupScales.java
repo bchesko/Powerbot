@@ -1,25 +1,23 @@
 package com.hunterz103.rsbot.scripts.dragonScales.tasks;
 
+import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
+import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
 import com.hunterz103.rsbot.scripts.framework.Task;
 import org.powerbot.script.lang.Filter;
 import org.powerbot.script.methods.Menu;
-import org.powerbot.script.methods.MethodContext;
 import org.powerbot.script.util.Condition;
-import org.powerbot.script.wrappers.GroundItem;
-import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
-import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
 import org.powerbot.script.util.Random;
-
+import org.powerbot.script.wrappers.GroundItem;
 
 import java.util.concurrent.Callable;
 
 /**
  * Created by Brian on 2/5/14.
  */
-public class PickupScales extends Task {
+public class PickupScales extends Task<BlueDragonScalePicker> {
 
-    public PickupScales(MethodContext ctx) {
-        super(ctx);
+    public PickupScales(BlueDragonScalePicker arg0) {
+        super(arg0);
     }
 
     @Override
@@ -33,29 +31,27 @@ public class PickupScales extends Task {
                 ctx.backpack.select().count() != 28 &&
                 !ctx.players.local().isInMotion() &&
                 ctx.players.local().getAnimation() == -1 &&
-                !BlueDragonScalePicker.needToTeleport;
+                !script.shouldTeleport();
     }
 
     @Override
     public void execute() {
-        final GroundItem scale = ctx.groundItems.select().id(243).nearest().poll();
-
-        if (scale != null) {
-            BlueDragonScalePicker.getInstance().log("Gonna pick up a scale");
+        if (!ctx.groundItems.select().id(243).isEmpty()) {
+            final GroundItem scale = ctx.groundItems.nearest().peek();
+            script.log("Going to pick up a scale");
             if (scale.getLocation().distanceTo(ctx.players.local()) >= 5) {
                 if (ctx.movement.stepTowards(scale)) {
                     Condition.wait(new Callable<Boolean>() {
                         @Override
                         public Boolean call() throws Exception {
-                            while (ctx.players.local().isInMotion());
-                            return scale.getLocation().distanceTo(ctx.players.local()) < 5;
+                            return scale.getLocation().distanceTo(ctx.players.local()) < 5 || !ctx.players.local().isInMotion();
                         }
-                    }, 200, 10);
+                    }, 300, 15);
                 }
             }
-            if (!scale.isInViewport()) {
+            if (!scale.isInViewport()) {   //If we can't see the scale, turn to it
                 ctx.camera.turnTo(scale);
-                if (!scale.isInViewport()) {
+                if (!scale.isInViewport()) { //if we STILL can't see the scale, adjust camera pitch
                     ctx.camera.setPitch(Random.nextInt(30, 60));
                 }
             } else {
@@ -63,10 +59,9 @@ public class PickupScales extends Task {
                     Condition.wait(new Callable<Boolean>() {
                         @Override
                         public Boolean call() throws Exception {
-                            while (ctx.players.local().isInMotion());
-                            return !scale.isValid() || !ctx.groundItems.select().id(243).nearest().poll().equals(scale);
+                            return !scale.isValid();
                         }
-                    }, Random.nextInt(200, 300), 10);
+                    }, 300, 10);
                 }
             }
         }
@@ -75,36 +70,30 @@ public class PickupScales extends Task {
     }
 
     private boolean takeScale(final GroundItem scale){
-        scale.click(false);
-        Condition.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return ctx.menu.isOpen();
-            }
-        }, Random.nextInt(20, 30), 10);
-
-        if (ctx.menu.isOpen()) {
-            if (ctx.menu.indexOf(takeFilter) == -1) {
-                ctx.menu.close();
-                ctx.camera.setPitch(Random.nextInt(60, 80));
-            } else {
-                int takeIndex = ctx.menu.indexOf(takeFilter);
-
-                if (takeIndex != -1) {
-                    ctx.menu.click(takeFilter);
-                    Condition.wait(new Callable<Boolean>() {
-                        @Override
-                        public Boolean call() throws Exception {
-                            return !ctx.menu.isOpen();
-                        }
-                    }, 50, 10);
-                    return true;
+        if (scale.click(false)){
+            Condition.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    return ctx.menu.isOpen();
                 }
-            }
+            }, Random.nextInt(20, 30), 10);
         }
 
+        if (ctx.menu.isOpen()) {
+            int takeIndex = ctx.menu.indexOf(takeFilter);
+            if (takeIndex == -1) {
+                ctx.menu.click(new Filter<Menu.Entry>(){
+                    @Override
+                    public boolean accept(Menu.Entry entry) {
+                        return entry.action.equalsIgnoreCase("cancel");
+                    }
+                });
+                //ctx.camera.setPitch(Random.nextInt(60, 80));
+            } else {
+                return ctx.menu.click(takeFilter);
+            }
+        }
         return false;
-
     }
 
     Filter takeFilter = new Filter<Menu.Entry>(){

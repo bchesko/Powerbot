@@ -20,7 +20,7 @@ public class Pathing extends MethodProvider {
     }
 
     public boolean walkPath(TilePath tp, int randomizeX, int randomizeY, int maxDistFrom) {
-        tp = randomize(tp, randomizeX, randomizeY);
+        tp.randomize(randomizeX, randomizeY);
         Tile[] tpa = tp.toArray();
         int startingIndex = 0;
 
@@ -35,39 +35,18 @@ public class Pathing extends MethodProvider {
 
         for (int i = startingIndex; i < tpa.length; i++){
             final Tile t = tpa[i];
-            ctx.movement.stepTowards(t);
-            Condition.wait(new Callable<Boolean>(){
-                @Override
-                public Boolean call() throws Exception {
-                    while (ctx.players.local().isInMotion() && t.distanceTo(ctx.players.local()) > 4) sleep(100);
-                    return t.distanceTo(ctx.players.local()) < 4;
-                }
-            }, 200, 10);
+            if (ctx.movement.stepTowards(t)) {
+                Condition.wait(new Callable<Boolean>(){
+                    @Override
+                    public Boolean call() throws Exception {
+                        //while (ctx.players.local().isInMotion() && t.distanceTo(ctx.players.local()) > 4) sleep(100);
+                        return t.distanceTo(ctx.players.local()) < 4;
+                    }
+                }, 800, 15);
+            }
         }
 
         return tp.getEnd().distanceTo(ctx.players.local()) < maxDistFrom;
-    }
-
-    /**
-     * Randomizes each tile of the path tilePath
-     * @param tilePath The path to randomize
-     * @param randomizeX Max distance to deviate from on the x axis
-     * @param randomizeY Max distance to deviate from on the y axis
-     * @return the randomized path
-     */
-    private TilePath randomize(TilePath tilePath, int randomizeX, int randomizeY) {
-        Tile[] result = new Tile[tilePath.toArray().length];
-
-        for (int i = 0; i < tilePath.toArray().length; i++) {
-            Tile t = tilePath.toArray()[i];
-
-            int newX = t.getX() + Random.nextInt(-randomizeX, randomizeX);
-            int newY = t.getY() + Random.nextInt(-randomizeY, randomizeY);
-
-            result[i] = new Tile(newX, newY, t.getPlane());
-        }
-
-        return new TilePath(ctx, result);
     }
 
 }

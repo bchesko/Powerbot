@@ -12,17 +12,11 @@ import javax.swing.GroupLayout;
  * @author Hunter 103
  */
 public class GUILogger extends JFrame {
-    public GUILogger() {
+
+    public GUILogger(DefaultListModel<String> dlm, DefaultListModel<String> dlmDev) {
+        panel1ListModel = dlm;
+        panel2ListModel = dlmDev;
         initComponents();
-    }
-
-
-    public void addToScriptLog(String str){
-        panel1ListModel.addElement(str);
-    }
-
-    public void addToDevLog(String str){
-        panel2ListModel.addElement(str);
     }
 
     private void initComponents() {
@@ -34,12 +28,21 @@ public class GUILogger extends JFrame {
         textPane2 = new JList();
         scriptLogLabel = new JLabel();
         label1 = new JLabel();
-        panel1ListModel = new DefaultListModel<>();
-        panel2ListModel = new DefaultListModel<>();
 
         //======== this ========
         setTitle("Hunterz103 Script Logger");
         Container contentPane = getContentPane();
+
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //======== scrollPane1 ========
         {
@@ -71,35 +74,36 @@ public class GUILogger extends JFrame {
         GroupLayout contentPaneLayout = new GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
-            contentPaneLayout.createParallelGroup()
-                .addGroup(contentPaneLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(contentPaneLayout.createParallelGroup()
-                                .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
-                                .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
-                                .addGroup(contentPaneLayout.createSequentialGroup()
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)
-                                        .addComponent(label1)
-                                        .addGap(0, 182, Short.MAX_VALUE))
-                                .addGroup(contentPaneLayout.createSequentialGroup()
-                                        .addGap(0, 197, Short.MAX_VALUE)
-                                        .addComponent(scriptLogLabel)
-                                        .addGap(0, 200, Short.MAX_VALUE)))
-                        .addContainerGap())
+                contentPaneLayout.createParallelGroup()
+                        .addGroup(contentPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(contentPaneLayout.createParallelGroup()
+                                        .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
+                                        .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
+                                        .addGroup(contentPaneLayout.createSequentialGroup()
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)
+                                                .addComponent(label1)
+                                                .addGap(0, 182, Short.MAX_VALUE))
+                                        .addGroup(contentPaneLayout.createSequentialGroup()
+                                                .addGap(0, 197, Short.MAX_VALUE)
+                                                .addComponent(scriptLogLabel)
+                                                .addGap(0, 200, Short.MAX_VALUE)))
+                                .addContainerGap())
         );
         contentPaneLayout.setVerticalGroup(
-            contentPaneLayout.createParallelGroup()
-                .addGroup(contentPaneLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(scriptLogLabel)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(label1)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
-                        .addContainerGap())
+                contentPaneLayout.createParallelGroup()
+                        .addGroup(contentPaneLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(scriptLogLabel)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(label1)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                                .addContainerGap())
         );
+
         pack();
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents

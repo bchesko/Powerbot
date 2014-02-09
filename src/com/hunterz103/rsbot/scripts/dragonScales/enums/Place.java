@@ -1,7 +1,7 @@
 package com.hunterz103.rsbot.scripts.dragonScales.enums;
 
-import org.powerbot.script.wrappers.Tile;
 import com.hunterz103.rsbot.wrappers.Area;
+import org.powerbot.script.wrappers.Tile;
 
 /**
  * Created by Brian on 2/5/14.

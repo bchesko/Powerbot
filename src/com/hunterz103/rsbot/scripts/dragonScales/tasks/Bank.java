@@ -1,11 +1,10 @@
 package com.hunterz103.rsbot.scripts.dragonScales.tasks;
 
-import com.hunterz103.rsbot.scripts.framework.Task;
-import org.powerbot.script.methods.MethodContext;
-import org.powerbot.script.util.Condition;
-import org.powerbot.script.wrappers.Item;
 import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
+import com.hunterz103.rsbot.scripts.framework.Task;
+import org.powerbot.script.util.Condition;
+import org.powerbot.script.wrappers.Item;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.Callable;
@@ -13,14 +12,14 @@ import java.util.concurrent.Callable;
 /**
  * Created by Brian on 2/5/14.
  */
-public class Bank extends Task {
+public class Bank extends Task<BlueDragonScalePicker> {
 
     private final int SCALE_ID = 243;
     private final int KEY_ID = 1590;
     private final int TAB_ID = 8009;
-    
-    public Bank(MethodContext ctx) {
-        super(ctx);
+
+    public Bank(BlueDragonScalePicker arg0) {
+        super(arg0);
     }
 
     @Override
@@ -38,25 +37,15 @@ public class Bank extends Task {
 
     @Override
     public void execute() {
-        if (!ctx.bank.isOpen()) {
-            ctx.bank.open();
-            sleep(300, 400);
-            Condition.wait(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    while (ctx.players.local().isInMotion());
-                    return ctx.bank.isOpen();
-                }
-            }, 300, 5);
-        } else {
-            if (BlueDragonScalePicker.scalesOrig == -1) {
-                BlueDragonScalePicker.scalesOrig = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
-                BlueDragonScalePicker.getInstance().log("Original amount of scales in bank: " + BlueDragonScalePicker.scalesOrig + ". (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(BlueDragonScalePicker.scalesOrig)) + " gp)");
+        if (ctx.bank.open()) {
+            if (script.scalesOrig == -1) {
+                script.scalesOrig = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
+                script.log("Original amount of scales in bank: " + script.scalesOrig + ". (That's " + new DecimalFormat("#,###").format(script.getNetProfit(script.scalesOrig)) + " gp)");
             }
-             for (Item item : ctx.backpack.getAllItems()) {
+            for (Item item : ctx.backpack.getAllItems()) {
                 if (item.getId() != -1 && shouldBeBanked(item) && ctx.backpack.select().contains(item)) {
                     ctx.bank.deposit(item.getId(), org.powerbot.script.methods.Bank.Amount.ALL);
-                    sleep(700, 900);
+                    sleep(300, 500);
                 }
             }
 
@@ -68,8 +57,8 @@ public class Bank extends Task {
             }, 200, 5);
 
             if (ctx.backpack.select().id(SCALE_ID).count() == 0) {
-                BlueDragonScalePicker.scales = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
-                BlueDragonScalePicker.getInstance().log(BlueDragonScalePicker.scales + " scale(s) are in the bank now. (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(BlueDragonScalePicker.scales)) + " gp)");
+                script.scales = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
+                script.log(script.scales + " scale(s) are in the bank now. (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(script.scales)) + " gp)");
                 ctx.bank.close();
             }
         }

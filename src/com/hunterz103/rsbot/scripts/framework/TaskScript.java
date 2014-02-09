@@ -1,6 +1,7 @@
 package com.hunterz103.rsbot.scripts.framework;
 
 import org.powerbot.script.PollingScript;
+import org.powerbot.script.methods.MethodContext;
 
 import javax.swing.*;
 import java.util.*;
@@ -10,19 +11,23 @@ import java.util.*;
  */
 public abstract class TaskScript extends PollingScript {
 
+    public MethodContext ctx;
     protected static TaskScript instance;
     public List<Task> tasks = new ArrayList<>();
     //private Task currentTask = null;
     private GUILogger guiLogger;
     private boolean guiVisible = false;
+    private DefaultListModel<String> dlm = new DefaultListModel<>();
+    private DefaultListModel<String> dlmDev = new DefaultListModel<>();
 
     public TaskScript(){
         TaskScript.instance = this;
+        this.ctx = super.ctx;
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                guiLogger = new GUILogger();
+                guiLogger = new GUILogger(dlm, dlmDev);
                 guiLogger.setVisible(true);
                 guiVisible = true;
             }
@@ -37,11 +42,11 @@ public abstract class TaskScript extends PollingScript {
     }
 
     public void log(String str) {
-        guiLogger.addToScriptLog(runtimeToString() + " - " + str);
+        dlm.addElement(runtimeToString() + " - " + str);
     }
 
     public void logDev(String str) {
-        guiLogger.addToDevLog(runtimeToString() + " - " + str);
+        dlmDev.addElement(runtimeToString() + " - " + str);
     }
 
     protected String runtimeToString(){
@@ -90,6 +95,5 @@ public abstract class TaskScript extends PollingScript {
     public static TaskScript getInstance() {
         return instance;
     }
-
 
 }
