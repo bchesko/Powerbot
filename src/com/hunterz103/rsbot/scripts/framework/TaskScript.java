@@ -4,7 +4,9 @@ import org.powerbot.script.PollingScript;
 import org.powerbot.script.methods.MethodContext;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Brian on 2/1/14.
@@ -21,7 +23,7 @@ public abstract class TaskScript extends PollingScript {
     private DefaultListModel<String> dlmDev = new DefaultListModel<>();
 
     public TaskScript(){
-        TaskScript.instance = this;
+        this.instance = this;
         this.ctx = super.ctx;
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -35,6 +37,10 @@ public abstract class TaskScript extends PollingScript {
 
         sortTasksByPriority();
     }
+
+    @Override
+    public abstract void start();
+
     private final void sortTasksByPriority() {
         if (tasks.size() == 0) return;
 
@@ -43,6 +49,7 @@ public abstract class TaskScript extends PollingScript {
 
     public void log(String str) {
         dlm.addElement(runtimeToString() + " - " + str);
+        for (int i = 0; i < dlm.size(); i++) System.out.println(dlm.getElementAt(i));
     }
 
     public void logDev(String str) {
@@ -62,6 +69,7 @@ public abstract class TaskScript extends PollingScript {
         if (!guiVisible) return 30;
         int returnTime = 50;
         /*
+        //Reenable this after adding overridability
         if (currentTask != null){
             if (!currentTask.isInProgress()) currentTask = null;
         }

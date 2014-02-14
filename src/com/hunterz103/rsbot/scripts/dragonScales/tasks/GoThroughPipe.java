@@ -30,29 +30,25 @@ public class GoThroughPipe extends Task<BlueDragonScalePicker> {
     @Override
     public void execute() {
         final GameObject pipe = ctx.objects.select().id(9293).poll();
+        ctx.camera.turnTo(pipe);
+        sleep(200, 400);
 
-        if (!pipe.isInViewport()) {
-            ctx.camera.turnTo(pipe);
-            sleep(300,500);
-        } else {
-
-            if (pipe.interact("Squeeze-through")) {
-                script.log("Squeezing through pipe to dragons");
-                if (Condition.wait(new Callable<Boolean>() {
-                        @Override
-                        public Boolean call() throws Exception {
-                            return ctx.players.local().getAnimation() == 10580;
-                        }
-                    }, 500, 10)) {
-                    Condition.wait(new Callable<Boolean>() {
-                        @Override
-                        public Boolean call() throws Exception {
-                            return Place.DRAGONS.area.containsPlayer(ctx);
-                        }
-                    }, 500, 10);
-                }
-
+        if (pipe.interact("Squeeze-through")) {
+            script.log("Squeezing through pipe to dragons");
+            if (Condition.wait(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return ctx.players.local().getAnimation() == 10580;
+                    }
+                }, 500, 10)) {
+                Condition.wait(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return Place.DRAGONS.area.containsPlayer(ctx);
+                    }
+                }, 500, 10);
             }
+
         }
     }
 }

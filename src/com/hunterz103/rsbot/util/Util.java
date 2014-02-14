@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Brian on 2/1/14.
@@ -65,14 +66,56 @@ public class Util {
                     strs.length * 16 + 3);
 
 
+        /*
         g.setColor(Color.BLACK);
         for (int i = strs.length - 1; i >= 0; i--) {
             g.drawString(strs[i], STRINGS_START_X - SHADOW_DIST, STRINGS_END_Y - SHADOW_DIST - (i * 16));
         }
+        */
 
         g.setColor(Color.RED);
         for (int i = strs.length - 1; i >= 0; i--) {
-            g.drawString(strs[i], STRINGS_START_X, STRINGS_END_Y - (i * 16));
+            g.drawString(strs[Math.abs(i - strs.length + 1)], STRINGS_START_X, STRINGS_END_Y - (i * 16));
+        }
+    }
+
+    public static void drawStrings(Graphics g, int STRINGS_START_X, int STRINGS_END_Y, String... strs){
+        String longestString = "";
+
+        for (String str : strs) {
+            if (g.getFontMetrics().stringWidth(str) > g.getFontMetrics().stringWidth(longestString)) longestString = str;
+        }
+
+        //This is what we call the "old fashioned temporary lazy paint"
+        //I actually found this in an old file from ~2012, and had a better version on an SDN script which I can't find
+        if (!g.getFont().equals(new Font("Tahoma", Font.PLAIN, 12))) {
+            g.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        }
+
+        g.setColor(Color.BLACK);
+        g.fillRect( STRINGS_START_X - 6,
+                STRINGS_END_Y - ((strs.length) * 16),
+                g.getFontMetrics().stringWidth(longestString) + 12,
+                strs.length * 16 + 6);
+
+        //Prince fan purple (RGB: 102, 0, 187)
+        g.setColor(new Color(102, 0, 187));
+        g.drawRect( STRINGS_START_X - 5,
+                STRINGS_END_Y - ((strs.length) * 16) + 1,
+                g.getFontMetrics().stringWidth(longestString) + 9,
+                strs.length * 16 + 3);
+
+
+        /*
+        g.setColor(Color.BLACK);
+        for (int i = strs.length - 1; i >= 0; i--) {
+            g.drawString(strs[i], STRINGS_START_X - SHADOW_DIST, STRINGS_END_Y - SHADOW_DIST - (i * 16));
+        }
+        */
+
+        g.setColor(Color.RED);
+        for (int i = strs.length - 1; i >= 0; i--) {
+            g.drawString(strs[Math.abs(i - strs.length + 1)], STRINGS_START_X, STRINGS_END_Y - (i * 16));
         }
     }
 
@@ -93,6 +136,14 @@ public class Util {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static String longToTimeString(long number){
+        if (number == -1) return "\u221e hours, \u221e min, \u221e sec";
+        return String.format("%d hours, %d min, %d sec",
+                TimeUnit.MILLISECONDS.toHours(number),
+                TimeUnit.MILLISECONDS.toMinutes(number) % 60,
+                TimeUnit.MILLISECONDS.toSeconds(number) % 60);
     }
 
 }

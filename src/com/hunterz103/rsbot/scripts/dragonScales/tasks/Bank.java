@@ -3,11 +3,9 @@ package com.hunterz103.rsbot.scripts.dragonScales.tasks;
 import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
 import com.hunterz103.rsbot.scripts.framework.Task;
-import org.powerbot.script.util.Condition;
 import org.powerbot.script.wrappers.Item;
 
 import java.text.DecimalFormat;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Brian on 2/5/14.
@@ -37,11 +35,8 @@ public class Bank extends Task<BlueDragonScalePicker> {
 
     @Override
     public void execute() {
+        ctx.camera.turnTo(ctx.bank.getNearest());
         if (ctx.bank.open()) {
-            if (script.scalesOrig == -1) {
-                script.scalesOrig = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
-                script.log("Original amount of scales in bank: " + script.scalesOrig + ". (That's " + new DecimalFormat("#,###").format(script.getNetProfit(script.scalesOrig)) + " gp)");
-            }
             for (Item item : ctx.backpack.getAllItems()) {
                 if (item.getId() != -1 && shouldBeBanked(item) && ctx.backpack.select().contains(item)) {
                     ctx.bank.deposit(item.getId(), org.powerbot.script.methods.Bank.Amount.ALL);
@@ -49,18 +44,10 @@ public class Bank extends Task<BlueDragonScalePicker> {
                 }
             }
 
-            Condition.wait(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    return ctx.backpack.select().id(SCALE_ID).count() == 0;
-                }
-            }, 200, 5);
-
-            if (ctx.backpack.select().id(SCALE_ID).count() == 0) {
-                script.scales = ctx.bank.select().id(SCALE_ID).poll().getStackSize();
-                script.log(script.scales + " scale(s) are in the bank now. (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(script.scales)) + " gp)");
-                ctx.bank.close();
-            }
+            int inBank = ctx.bank.select().id(243).poll().getStackSize();
+            script.log(script.scales + " picked up so far. (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(script.scales)) + " gp)");
+            script.log(inBank + " scale(s) in the bank. (That's " + new DecimalFormat("#,###").format(BlueDragonScalePicker.getNetProfit(inBank)) + " gp)");
+            ctx.bank.close();
         }
     }
 

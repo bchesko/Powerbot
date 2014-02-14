@@ -4,9 +4,8 @@
 
 package com.hunterz103.rsbot.scripts.framework;
 
-import java.awt.*;
 import javax.swing.*;
-import javax.swing.GroupLayout;
+import java.awt.*;
 
 /**
  * @author Hunter 103
@@ -33,16 +32,6 @@ public class GUILogger extends JFrame {
         setTitle("Hunterz103 Script Logger");
         Container contentPane = getContentPane();
 
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         //======== scrollPane1 ========
         {
@@ -50,7 +39,6 @@ public class GUILogger extends JFrame {
             //---- textPane1 ----
             scrollPane1.setViewportView(textPane1);
             textPane1.setModel(panel1ListModel);
-            scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         }
 
         //======== scrollPane2 ========
@@ -59,7 +47,6 @@ public class GUILogger extends JFrame {
             //---- textPane2 ----
             scrollPane2.setViewportView(textPane2);
             textPane2.setModel(panel2ListModel);
-            scrollPane2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         }
 
         //---- scriptLogLabel ----

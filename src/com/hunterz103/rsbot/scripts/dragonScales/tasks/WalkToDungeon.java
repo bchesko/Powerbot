@@ -37,26 +37,23 @@ public class WalkToDungeon extends Task<BlueDragonScalePicker> {
     @Override
     public void execute() {
         if (ctx.players.local().getLocation().getX() >= 2936) { //Before the wall jump
-            if (pathToWall.getEnd().distanceTo(ctx.players.local()) > 7) {
-                pathing.walkPath(pathToWall, 3, 3, 3);
+            if (pathToWall.getEnd().distanceTo(ctx.players.local()) > 3) {
+                pathing.walkPath(pathToWall, 1, 1, 2);
             } else {
                 final GameObject wall = ctx.objects.select().id(11844).poll();
 
                 if (wall.isValid()) {
-                    if (!wall.isInViewport()) {
-                        ctx.camera.turnTo(wall);
-                        sleep(300, 500);
-                    }
+                    ctx.camera.turnTo(wall);
+                    sleep(300, 500);
 
                     if (wall.interact("Climb-over")) {
                         script.log("Climbing over wall.");
                         Condition.wait(new Callable<Boolean>() {
                             @Override
                             public Boolean call() throws Exception {
-                                while (ctx.players.local().getAnimation() != -1);
-                                return ctx.players.local().getLocation().getX() <= 2935;
+                                return ctx.players.local().getLocation().getX() <= 2935 || !ctx.players.local().isInMotion();
                             }
-                        }, 500, 5);
+                        }, 400, 10);
                     }
                 }
             }
@@ -71,17 +68,15 @@ public class WalkToDungeon extends Task<BlueDragonScalePicker> {
 
                 if (dungeon.interact("Climb-down")) {
                     script.log("Going into dungeon.");
-                    sleep(300, 400);
                     Condition.wait(new Callable() {
                         @Override
                         public Object call() throws Exception {
-                            while (ctx.players.local().getAnimation() != -1 && ctx.players.local().isInMotion());
-                            return Place.INNER_DUNGEON.area.contains(ctx.players.local());
+                            return Place.INNER_DUNGEON.area.contains(ctx.players.local()) || !ctx.players.local().isInMotion();
                         }
-                    }, 200, 10);
+                    }, 300, 20);
                 }
             } else { //AWAY FROM STEPS
-                pathing.walkPath(pathToDung, 3, 3, 3);
+                pathing.walkPath(pathToDung, 2, 3, 3);
             }
         }
     }

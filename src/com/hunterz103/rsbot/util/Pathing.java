@@ -5,7 +5,6 @@ import org.powerbot.script.methods.MethodProvider;
 import org.powerbot.script.util.Condition;
 import org.powerbot.script.wrappers.Tile;
 import org.powerbot.script.wrappers.TilePath;
-import org.powerbot.script.util.Random;
 
 import java.util.concurrent.Callable;
 

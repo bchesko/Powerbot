@@ -4,7 +4,6 @@ import com.hunterz103.rsbot.scripts.dragonScales.BlueDragonScalePicker;
 import com.hunterz103.rsbot.scripts.dragonScales.enums.Place;
 import com.hunterz103.rsbot.scripts.framework.Task;
 import org.powerbot.script.util.Condition;
-import org.powerbot.script.wrappers.Action;
 import org.powerbot.script.wrappers.Item;
 
 import java.util.concurrent.Callable;
@@ -20,7 +19,7 @@ public class TeleportToBank extends Task<BlueDragonScalePicker> {
 
     @Override
     public int getPriority() {
-        return 1;
+        return 0;
     }
 
     @Override
@@ -32,14 +31,7 @@ public class TeleportToBank extends Task<BlueDragonScalePicker> {
     public void execute() {
         if (!ctx.backpack.select().id(8009).isEmpty()) {
             final Item tab = ctx.backpack.select().id(8009).poll();
-            int actionSlot = -1;
-
-            for (Action action : ctx.combatBar.getActions()) {
-                if (action.getType() == Action.Type.ITEM && action.getId() == 8009) {
-                    actionSlot = action.getSlot();
-                    break;
-                }
-            }
+            int actionSlot = ctx.combatBar.select().id(8009).first().poll().getSlot();
 
             if (actionSlot != -1) {
                 if (ctx.combatBar.getActionAt(actionSlot).select()) {
